@@ -1,0 +1,7 @@
+Employed?	No	Loan:reject
+Salary?	Very low	Loan: reject
+Owns house/car?	Yes	Loan: accept
+Salary?	Low	Owns house/car?
+Owns house/car?	No	Loan: reject
+Employed?	Yes	Salary?
+Salary?	High	Loan: accept
