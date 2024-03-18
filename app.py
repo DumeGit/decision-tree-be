@@ -1,4 +1,16 @@
-import json
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
+@app.route("/get_children", methods=["GET"])
+def get_children():
+    try:
+        node = request.args.get("node")
+        children = decision_tree.get(node, {})
+        return jsonify(children)
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 
 def build_decision_tree(triads):
@@ -25,7 +37,7 @@ def find_root_node(triads):
     for triad in triads:
         start_node, _, _ = triad.split("\t")
         if start_node not in target_nodes:
-            return start_node
+            return {"root": start_node, "children": decision_tree.get(start_node, {})}
 
     return None
 
@@ -62,10 +74,34 @@ def read_triads_from_file(filename):
             triads.append(triad)
     return triads
 
+triads = []  # Initialize an empty list for triads
+
+@app.route("/load_triads", methods=["POST"])
+def load_triads():
+    try:
+        uploaded_file = request.files["file"]
+        if uploaded_file.filename != "":
+            # Read triads from the uploaded file
+            triads.clear()  # Clear existing triads
+            for line in uploaded_file:
+                triad = line.decode("utf-8").strip()
+                triads.append(triad)
+
+            # Build the decision tree
+            global decision_tree
+            decision_tree = build_decision_tree(triads)
+
+            return jsonify(find_root_node(triads))
+        else:
+            return jsonify({"error": "No file uploaded."})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
 
 if __name__ == "__main__":
-    filename = "triads.txt"
-    triads = read_triads_from_file(filename)
+    #filename = "triads.txt"
+    #triads = read_triads_from_file(filename)
 
-    decision_tree = build_decision_tree(triads)
-    traverse_decision_tree(decision_tree, triads)
+    #decision_tree = build_decision_tree(triads)
+    #traverse_decision_tree(decision_tree, triads)
+    app.run(debug=True)
