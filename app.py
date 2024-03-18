@@ -3,12 +3,16 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
+triads = []
+
+
 @app.route("/get_children", methods=["GET"])
 def get_children():
     try:
         node = request.args.get("node")
         children = decision_tree.get(node, {})
-        return jsonify(children)
+        children_list = [{"question": item[0], "answer": item[1]} for item in list(children.items())]
+        return jsonify({"root": node, "children": children_list})
     except Exception as e:
         return jsonify({"error": str(e)})
 
@@ -37,7 +41,8 @@ def find_root_node(triads):
     for triad in triads:
         start_node, _, _ = triad.split("\t")
         if start_node not in target_nodes:
-            return {"root": start_node, "children": decision_tree.get(start_node, {})}
+            children_list = [{"question": item[0], "answer": item[1]} for item in list(decision_tree.get(start_node, {}).items())]
+            return {"root": start_node, "children": children_list}
 
     return None
 
@@ -74,20 +79,17 @@ def read_triads_from_file(filename):
             triads.append(triad)
     return triads
 
-triads = []  # Initialize an empty list for triads
 
 @app.route("/load_triads", methods=["POST"])
 def load_triads():
     try:
         uploaded_file = request.files["file"]
         if uploaded_file.filename != "":
-            # Read triads from the uploaded file
-            triads.clear()  # Clear existing triads
+            triads.clear()
             for line in uploaded_file:
                 triad = line.decode("utf-8").strip()
                 triads.append(triad)
 
-            # Build the decision tree
             global decision_tree
             decision_tree = build_decision_tree(triads)
 
@@ -99,9 +101,4 @@ def load_triads():
 
 
 if __name__ == "__main__":
-    #filename = "triads.txt"
-    #triads = read_triads_from_file(filename)
-
-    #decision_tree = build_decision_tree(triads)
-    #traverse_decision_tree(decision_tree, triads)
     app.run(debug=True)
