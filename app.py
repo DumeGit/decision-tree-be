@@ -12,10 +12,11 @@ links = {}
 def get_children():
     try:
         node = request.args.get("node")
-        children_list = [{"question": {'id': item[1], 'label': entities[item[1]]},
-                          "answer": {'id': item[0], 'label': links[item[0]].get('label')}} for item in
+        children_list = [{"question": {'id': item[1], 'label': entities[item[1]].get('label')},
+                          "answer": {'id': item[0], 'label': links[item[0]].get('label'),
+                                     'image': links[item[0]].get('image')}} for item in
                          list(decision_tree.get(node, {}).items())]
-        return jsonify({"root": {'id': node, 'label': entities.get(node)}, "children": children_list})
+        return jsonify({"root": {'id': node, 'label': entities.get(node).get('label'), 'image': entities.get(node).get('image')}, "children": children_list})
     except Exception as e:
         return jsonify({"error": str(e)})
 
@@ -103,20 +104,20 @@ def parse_ivml(file_path):
     tree = ET.parse(file_path)
     root = tree.getroot()
 
-    # Extract entities
     for entity in root.findall('.//{urn:ivml}entity'):
         entity_id = entity.get('id')
         label = entity.get('label')
-        # Process other properties as needed
-        entities[entity_id] = label
+        image_file = entity.find('.//{http://cmap.ihmc.us/xml/cmap/}resource')
+        image = ''
+        if image_file is not None:
+            image = entity.find('.//{http://cmap.ihmc.us/xml/cmap/}resource').get('resource-url')
+        entities[entity_id] = {'label': label, 'image': image}
 
-    # Extract links
     for link in root.findall('.//{urn:ivml}link'):
         link_id = link.get('id')
         from_id = link.get('from')
         to_id = link.get('to')
         label = link.get('label')
-        # Process other properties as needed
         links[link_id] = ({'from_id': from_id, 'to_id': to_id, 'label': label})
 
     return entities, links
@@ -146,9 +147,10 @@ def find_root_node_ivml(entities, links):
 
     for entity_id, _ in entities.items():
         if entity_id not in target_nodes:
-            children_list = [{"question": {'id': item[1], 'label': entities[item[1]]}, "answer": {'id': item[0], 'label': links[item[0]].get('label')}} for item in
+            children_list = [{"question": {'id': item[1], 'label': entities[item[1]].get('label'), 'image': entities[item[1]].get('image')},
+                              "answer": {'id': item[0], 'label': links[item[0]].get('label'), 'image': entities[item[1]].get('image')}} for item in
                              list(decision_tree.get(entity_id, {}).items())]
-            return {"root": {'id': entity_id, 'label': entities[entity_id]}, "children": children_list}
+            return {"root": {'id': entity_id, 'label': entities[entity_id].get('label'), 'image': entities[entity_id].get('image')}, "children": children_list}
 
     return None
 
