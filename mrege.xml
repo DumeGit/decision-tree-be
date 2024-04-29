@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<topicMap id="1KNLN7SYC-1WP9LDY-99"
+    xmlns="http://www.topicmaps.org/xtm/1.0/" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <topic id="1KNLNKXNP-30ZLVT-PY">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#concept"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Time is available
+to devote to this effort
+over the next
+several months.
+]]></baseNameString>
+        </baseName>
+    </topic>
+    <topic id="1KNLN8273-1NQPT90-9W">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#concept"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Stop.]]></baseNameString>
+        </baseName>
+    </topic>
+    <topic id="1KNLNGL1Y-TZ0K8S-M2">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#concept"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Organization is not currently
+ in crisis mode.]]></baseNameString>
+        </baseName>
+    </topic>
+    <topic id="1KNLNL18V-25JT0F8-Q2">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#concept"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Analyze your area of
+weakness, and be aware
+on how they may impact
+your chances of success in 
+a merger negotiation process.]]></baseNameString>
+        </baseName>
+    </topic>
+    <topic id="1KNLNDBXQ-23PR4C8-GM">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#concept"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Clarify your motivation further.]]></baseNameString>
+        </baseName>
+    </topic>
+    <topic id="1KNLN809R-1FWCS79-9R">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#concept"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[We are motivated by
+a clearly stated 
+ outcomes.]]></baseNameString>
+        </baseName>
+    </topic>
+    <topic id="1KNLN7Y6Y-94BTKN-9H">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#concept"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[We are motivated
+by a desire to advance 
+our mission.]]></baseNameString>
+        </baseName>
+        <occurrence>
+            <resourceRef xlink:type="simple" xlink:href="file:/./mrege/lorem.txt"/>
+        </occurrence>
+        <occurrence>
+            <resourceRef xlink:type="simple" xlink:href="file:/./mrege/employ.jpg"/>
+        </occurrence>
+    </topic>
+    <topic id="1KNLNWKX1-15Y60QG-13W">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#concept"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Question how important
+this is to you, and
+how wise it is
+to proceed.]]></baseNameString>
+        </baseName>
+    </topic>
+    <topic id="1KNLNW9SL-2CP3211-130">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#concept"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Merge the companies.]]></baseNameString>
+        </baseName>
+    </topic>
+    <topic id="1KNLNWHYN-17THTY4-139">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#linkingPhrase"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Yes]]></baseNameString>
+        </baseName>
+    </topic>
+    <association id="assoc_1KNLNWHYN-17THTY4-139">
+        <instanceOf>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNWHYN-17THTY4-139"/>
+        </instanceOf>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#incoming"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNKXNP-30ZLVT-PY"/>
+        </member>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#outgoing"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNW9SL-2CP3211-130"/>
+        </member>
+    </association>
+    <topic id="1KNLNGBFT-2967KP6-LB">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#linkingPhrase"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[No]]></baseNameString>
+        </baseName>
+    </topic>
+    <association id="assoc_1KNLNGBFT-2967KP6-LB">
+        <instanceOf>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNGBFT-2967KP6-LB"/>
+        </instanceOf>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#incoming"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#1KNLN809R-1FWCS79-9R"/>
+        </member>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#outgoing"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNDBXQ-23PR4C8-GM"/>
+        </member>
+    </association>
+    <topic id="1KNLNFJJ8-1V3YCCM-JB">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#linkingPhrase"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Yes]]></baseNameString>
+        </baseName>
+    </topic>
+    <association id="assoc_1KNLNFJJ8-1V3YCCM-JB">
+        <instanceOf>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNFJJ8-1V3YCCM-JB"/>
+        </instanceOf>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#incoming"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#1KNLN7Y6Y-94BTKN-9H"/>
+        </member>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#outgoing"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#1KNLN809R-1FWCS79-9R"/>
+        </member>
+    </association>
+    <topic id="1KNLNFMRY-207H93G-K3">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#linkingPhrase"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[No]]></baseNameString>
+        </baseName>
+    </topic>
+    <association id="assoc_1KNLNFMRY-207H93G-K3">
+        <instanceOf>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNFMRY-207H93G-K3"/>
+        </instanceOf>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#incoming"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#1KNLN7Y6Y-94BTKN-9H"/>
+        </member>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#outgoing"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#1KNLN8273-1NQPT90-9W"/>
+        </member>
+    </association>
+    <topic id="1KNLNLG6X-27KQG1V-R3">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#linkingPhrase"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[No]]></baseNameString>
+        </baseName>
+    </topic>
+    <association id="assoc_1KNLNLG6X-27KQG1V-R3">
+        <instanceOf>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNLG6X-27KQG1V-R3"/>
+        </instanceOf>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#incoming"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNGL1Y-TZ0K8S-M2"/>
+        </member>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#outgoing"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNL18V-25JT0F8-Q2"/>
+        </member>
+    </association>
+    <topic id="1KNLNWRRL-2C814KJ-145">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#linkingPhrase"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[No]]></baseNameString>
+        </baseName>
+    </topic>
+    <association id="assoc_1KNLNWRRL-2C814KJ-145">
+        <instanceOf>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNWRRL-2C814KJ-145"/>
+        </instanceOf>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#incoming"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNKXNP-30ZLVT-PY"/>
+        </member>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#outgoing"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNWKX1-15Y60QG-13W"/>
+        </member>
+    </association>
+    <topic id="1KNLNGP7K-RH4D82-MB">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#linkingPhrase"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Yes]]></baseNameString>
+        </baseName>
+    </topic>
+    <association id="assoc_1KNLNGP7K-RH4D82-MB">
+        <instanceOf>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNGP7K-RH4D82-MB"/>
+        </instanceOf>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#incoming"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#1KNLN809R-1FWCS79-9R"/>
+        </member>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#outgoing"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNGL1Y-TZ0K8S-M2"/>
+        </member>
+    </association>
+    <topic id="1KNLNL7SV-1CCK6RB-QC">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#linkingPhrase"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Yes]]></baseNameString>
+        </baseName>
+    </topic>
+    <association id="assoc_1KNLNL7SV-1CCK6RB-QC">
+        <instanceOf>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNL7SV-1CCK6RB-QC"/>
+        </instanceOf>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#incoming"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNGL1Y-TZ0K8S-M2"/>
+        </member>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#outgoing"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#1KNLNKXNP-30ZLVT-PY"/>
+        </member>
+    </association>
+</topicMap>

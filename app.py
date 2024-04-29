@@ -1,12 +1,16 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import xml.etree.ElementTree as ET
+import zipfile
+import os
 
 app = Flask(__name__)
 CORS(app)
-triads = []
 entities = {}
-links = {}
+links = {}  # Dictionary to store topic information
+associations = {}  # List to store associations
+UPLOAD_FOLDER = 'images'
+
 
 @app.route("/get_children", methods=["GET"])
 def get_children():
@@ -16,73 +20,18 @@ def get_children():
                           "answer": {'id': item[0], 'label': links[item[0]].get('label'),
                                      'image': links[item[0]].get('image')}} for item in
                          list(decision_tree.get(node, {}).items())]
-        return jsonify({"root": {'id': node, 'label': entities.get(node).get('label'), 'image': entities.get(node).get('image')}, "children": children_list})
+        return jsonify(
+            {"root": {'id': node, 'label': entities.get(node).get('label'), 'image': entities.get(node).get('image'),
+                      'description': entities.get(node).get('description')},
+             "children": children_list})
     except Exception as e:
         return jsonify({"error": str(e)})
 
 
-def build_decision_tree(triads):
-    decision_tree = {}
-
-    for triad in triads:
-        start_node, link, target_node = triad.split("\t")
-
-        if start_node not in decision_tree:
-            decision_tree[start_node] = {}
-
-        decision_tree[start_node][link] = target_node
-
-    return decision_tree
-
-
-def find_root_node(triads):
-    target_nodes = set()
-
-    for triad in triads:
-        start_node, link, target_node = triad.split("\t")
-        target_nodes.add(target_node)
-
-    for triad in triads:
-        start_node, _, _ = triad.split("\t")
-        if start_node not in target_nodes:
-            children_list = [{"question": item[0], "answer": item[1]} for item in
-                             list(decision_tree.get(start_node, {}).items())]
-            return {"root": start_node, "children": children_list}
-
-    return None
-
-
-def traverse_decision_tree(decision_tree, triads):
-    current_node = find_root_node(triads)
-
-    while True:
-        print(f"Current node: {current_node}")
-        choices = decision_tree.get(current_node, {})
-
-        if not choices:
-            print("Reached a leaf node.")
-            break
-
-        print("Available choices:")
-        for i, (link, target_node) in enumerate(choices.items(), start=1):
-            print(f"{i}. {link}")
-
-        choice = input("Enter your choice (1, 2, ...): ")
-        try:
-            choice = int(choice)
-            link = list(choices.keys())[choice - 1]
-            current_node = choices[link]
-        except (ValueError, IndexError):
-            print("Invalid choice. Please enter a valid number.")
-
-
-def read_triads_from_file(filename):
-    triads = []
-    with open(filename, 'r') as file:
-        for line in file:
-            triad = line.strip()
-            triads.append(triad)
-    return triads
+@app.route('/images', methods=["GET"])
+def get_image():
+    filename = request.args.get("image")
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 
 @app.route("/load_triads", methods=["POST"])
@@ -90,42 +39,93 @@ def load_triads():
     try:
         uploaded_file = request.files["file"]
         if uploaded_file.filename != "":
-            entities, links = parse_ivml(uploaded_file)
+            xml_file = extract_files(uploaded_file)
+            entities, links = parse_xtm_file(xml_file)
             global decision_tree
-            decision_tree = build_decision_tree_ivml(links)
-            return jsonify(find_root_node_ivml(entities, links))
+            decision_tree = build_decision_tree(links)
+            return jsonify(find_root_node(entities, links))
         else:
             return jsonify({"error": "No file uploaded."})
     except Exception as e:
         return jsonify({"error": str(e)})
 
 
-def parse_ivml(file_path):
+def extract_files(file):
+    with zipfile.ZipFile(file, 'r') as zip_ref:
+        xml_files = [f for f in zip_ref.namelist() if f.endswith('.xml')]
+        txt_files = [f for f in zip_ref.namelist() if f.endswith('.txt')]
+
+        if not xml_files and not txt_files:
+            return 'No XML or TXT files found in the zip'
+
+        xml_filename = xml_files[0] if xml_files else None
+
+        if xml_filename:
+            zip_ref.extract(xml_filename)
+
+        images_folder = 'images'
+        os.makedirs(images_folder, exist_ok=True)
+
+        texts_folder = 'texts'
+        os.makedirs(texts_folder, exist_ok=True)
+
+        for file_item in zip_ref.namelist():
+            if file_item.endswith(('.png', '.jpg', '.jpeg')):
+                zip_ref.extract(file_item, images_folder)
+            elif file_item.endswith(('.txt', '.htm')):
+                zip_ref.extract(file_item, texts_folder)
+
+        return xml_filename
+
+
+def parse_xtm_file(file_path):
+    """
+    Parses an XTM file and extracts relevant information.
+    Assumes the XTM file follows the structure provided in your example.
+    """
     tree = ET.parse(file_path)
     root = tree.getroot()
 
-    for entity in root.findall('.//{urn:ivml}entity'):
-        entity_id = entity.get('id')
-        label = entity.get('label')
-        image_file = entity.find('.//{http://cmap.ihmc.us/xml/cmap/}resource')
-        image = ''
-        if image_file is not None:
-            image = entity.find('.//{http://cmap.ihmc.us/xml/cmap/}resource').get('resource-url')
-        entities[entity_id] = {'label': label, 'image': image}
+    for topic in root.findall(".//{http://www.topicmaps.org/xtm/1.0/}topic"):
+        topic_id = topic.get("id")
+        topic_type = topic.find(".//{http://www.topicmaps.org/xtm/1.0/}instanceOf").find(
+            ".//{http://www.topicmaps.org/xtm/1.0/}subjectIndicatorRef").attrib[
+            '{http://www.w3.org/1999/xlink}href'].split('#')[-1]
+        base_name = topic.find(".//{http://www.topicmaps.org/xtm/1.0/}baseNameString").text
+        image_name = ""
+        description = ""
+        if topic_type == 'linkingPhrase':
+            links[topic_id] = {"label": base_name, "image": image_name, "description": description}
+        else:
+            for occurrence in topic.findall(".//{http://www.topicmaps.org/xtm/1.0/}occurrence"):
+                if occurrence is not None:
+                    file_path = occurrence.find(".//{http://www.topicmaps.org/xtm/1.0/}resourceRef").attrib[
+                        '{http://www.w3.org/1999/xlink}href']
+                    if file_path[0:4] == 'file':
+                        _, file_extension = os.path.splitext(file_path)
+                        if file_extension.lower() in ('.png', '.jpg', '.jpeg'):
+                            image_name = file_path.split('/./')[1]
+                        elif file_extension.lower() in ('.txt', '.htm'):
+                            with open('texts/' + file_path.split('/./')[1], 'r') as file:
+                                description = file.read()
 
-    for link in root.findall('.//{urn:ivml}link'):
-        link_id = link.get('id')
-        from_id = link.get('from')
-        to_id = link.get('to')
-        label = link.get('label')
-        links[link_id] = ({'from_id': from_id, 'to_id': to_id, 'label': label})
+            entities[topic_id] = {"label": base_name, "image": image_name, "description": description}
 
-    return entities, links
+    for association in root.findall(".//{http://www.topicmaps.org/xtm/1.0/}association"):
+        link_id = association.find(".//{http://www.topicmaps.org/xtm/1.0/}instanceOf").find(
+            "{http://www.topicmaps.org/xtm/1.0/}topicRef").attrib['{http://www.w3.org/1999/xlink}href'].split('#')[-1]
+        from_id = association.find(
+            ".//{http://www.topicmaps.org/xtm/1.0/}member[1]/{http://www.topicmaps.org/xtm/1.0/}topicRef").attrib[
+            '{http://www.w3.org/1999/xlink}href'].split('#')[-1]
+        to_id = association.find(
+            ".//{http://www.topicmaps.org/xtm/1.0/}member[2]/{http://www.topicmaps.org/xtm/1.0/}topicRef").attrib[
+            '{http://www.w3.org/1999/xlink}href'].split('#')[-1]
+        associations[link_id] = ({'from_id': from_id, 'to_id': to_id, 'label': links[link_id]["label"]})
+
+    return entities, associations
 
 
-# Example usage
-
-def build_decision_tree_ivml(links):
+def build_decision_tree(links):
     decision_tree = {}
     for id, data in links.items():
         if data.get('from_id') not in decision_tree:
@@ -133,29 +133,24 @@ def build_decision_tree_ivml(links):
 
         decision_tree[data.get('from_id')][id] = data.get('to_id')
 
-    # for entity_id, label in entities.items():
-    #    if entity_id not in decision_tree_ivml:
-    #        decision_tree_ivml[entity_id] = {}
-
-    #    decision_tree_ivml[entity_id]['label'] = label
-
     return decision_tree
 
 
-def find_root_node_ivml(entities, links):
+def find_root_node(entities, links):
     target_nodes = set(data.get('to_id') for _, data in links.items())
 
     for entity_id, _ in entities.items():
         if entity_id not in target_nodes:
-            children_list = [{"question": {'id': item[1], 'label': entities[item[1]].get('label'), 'image': entities[item[1]].get('image')},
-                              "answer": {'id': item[0], 'label': links[item[0]].get('label'), 'image': entities[item[1]].get('image')}} for item in
+            children_list = [{"question": {'id': item[1], 'label': entities[item[1]].get('label'),
+                                           'image': entities[item[1]].get('image')},
+                              "answer": {'id': item[0], 'label': links[item[0]].get('label'),
+                                         'image': entities[item[1]].get('image')}} for item in
                              list(decision_tree.get(entity_id, {}).items())]
-            return {"root": {'id': entity_id, 'label': entities[entity_id].get('label'), 'image': entities[entity_id].get('image')}, "children": children_list}
+            return {"root": {'id': entity_id, 'label': entities[entity_id].get('label'),
+                             'image': entities[entity_id].get('image'),
+                             'description': entities[entity_id].get('description')}, "children": children_list}
 
     return None
-
-
-# Example usage
 
 
 if __name__ == "__main__":
