@@ -1,4 +1,6 @@
-from flask import Flask, request, jsonify, send_from_directory
+import shutil
+
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import xml.etree.ElementTree as ET
 import zipfile
@@ -9,7 +11,7 @@ CORS(app)
 entities = {}
 links = {}  # Dictionary to store topic information
 associations = {}  # List to store associations
-UPLOAD_FOLDER = 'images'
+FOLDER_IGNORE_LIST = (".DS_Store", ".git", ".venv", "__pycache__", ".idea")
 
 
 @app.route("/get_children", methods=["GET"])
@@ -31,7 +33,39 @@ def get_children():
 @app.route('/images', methods=["GET"])
 def get_image():
     filename = request.args.get("image")
-    return send_from_directory(UPLOAD_FOLDER, filename)
+    return send_file(filename)
+
+
+@app.route('/tree', methods=["GET"])
+def start_tree():
+    folder = request.args.get("name").strip()
+    file = folder + ".xml"
+    entities, links = parse_xtm_file(folder + '/' + file)
+    global decision_tree
+    decision_tree = build_decision_tree(links)
+    return jsonify(find_root_node(entities, links))
+
+
+@app.route('/trees', methods=["GET"])
+def get_trees():
+    folder_objects = []
+
+    for item in os.listdir():
+        if os.path.isdir(item) and item not in FOLDER_IGNORE_LIST:
+            description = 'No description available'
+            description_file_path = os.path.join(item, 'description.txt')
+            # Check if the description.txt file exists in the directory
+            if os.path.isfile(description_file_path):
+                with open(description_file_path, 'r') as file:
+                    description = file.read().strip()
+
+            # Create a dictionary object representing the folder
+            folder_object = {
+                'name': item,
+                'description': description
+            }
+            folder_objects.append(folder_object)
+    return folder_objects
 
 
 @app.route("/load_triads", methods=["POST"])
@@ -40,7 +74,8 @@ def load_triads():
         uploaded_file = request.files["file"]
         if uploaded_file.filename != "":
             xml_file = extract_files(uploaded_file)
-            entities, links = parse_xtm_file(xml_file)
+            xml_file_folder = xml_file.split('.xml')[0]
+            entities, links = parse_xtm_file(xml_file_folder + '/' + xml_file)
             global decision_tree
             decision_tree = build_decision_tree(links)
             return jsonify(find_root_node(entities, links))
@@ -60,20 +95,35 @@ def extract_files(file):
 
         xml_filename = xml_files[0] if xml_files else None
 
-        if xml_filename:
-            zip_ref.extract(xml_filename)
+        folder_name = xml_filename.split('.xml')[0]
 
-        images_folder = 'images'
+        if xml_filename:
+            zip_ref.extract(xml_filename, folder_name)
+
+        images_folder = folder_name + '/images'
         os.makedirs(images_folder, exist_ok=True)
 
-        texts_folder = 'texts'
+        texts_folder = folder_name + '/texts'
         os.makedirs(texts_folder, exist_ok=True)
 
         for file_item in zip_ref.namelist():
-            if file_item.endswith(('.png', '.jpg', '.jpeg')):
-                zip_ref.extract(file_item, images_folder)
-            elif file_item.endswith(('.txt', '.htm')):
-                zip_ref.extract(file_item, texts_folder)
+            if file_item.endswith(('.png', '.jpg', '.jpeg', '.txt', '.htm')):
+                if file_item.endswith(('.png', '.jpg', '.jpeg')):
+                    extracted_path = zip_ref.extract(file_item, images_folder)
+                    file_name = os.path.basename(file_item)
+                    new_path = os.path.join(images_folder, file_name)
+                elif file_item.endswith(('.txt', '.htm')):
+                    extracted_path = zip_ref.extract(file_item, texts_folder)
+                    file_name = os.path.basename(file_item)
+                    new_path = os.path.join(texts_folder, file_name)
+                shutil.move(extracted_path, new_path)
+                intermediate_dir = os.path.dirname(extracted_path)
+                while intermediate_dir and intermediate_dir != images_folder and intermediate_dir != texts_folder:
+                    try:
+                        os.rmdir(intermediate_dir)
+                    except OSError:
+                        break
+                    intermediate_dir = os.path.dirname(intermediate_dir)
 
         return xml_filename
 
@@ -104,9 +154,15 @@ def parse_xtm_file(file_path):
                     if file_path[0:4] == 'file':
                         _, file_extension = os.path.splitext(file_path)
                         if file_extension.lower() in ('.png', '.jpg', '.jpeg'):
-                            image_name = file_path.split('/./')[1]
+                            split_path = file_path.split('/./')[1].split('/')
+                            folder_name = split_path[0]
+                            image_file = split_path[1]
+                            image_name = folder_name + '/images/' + image_file
                         elif file_extension.lower() in ('.txt', '.htm'):
-                            with open('texts/' + file_path.split('/./')[1], 'r') as file:
+                            split_path = file_path.split('/./')[1].split('/')
+                            folder_name = split_path[0]
+                            text_file = split_path[1]
+                            with open(folder_name + '/texts/' + text_file, 'r') as file:
                                 description = file.read()
 
             entities[topic_id] = {"label": base_name, "image": image_name, "description": description}
