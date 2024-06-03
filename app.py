@@ -10,6 +10,7 @@ CORS(app)
 
 FOLDER_IGNORE_LIST = {".DS_Store", ".git", ".venv", "__pycache__", ".idea"}
 
+
 class Entity:
     def __init__(self, id, label, image="", description=""):
         self.id = id
@@ -24,6 +25,7 @@ class Entity:
             'image': self.image,
             'description': self.description
         }
+
 
 class Link:
     def __init__(self, id, label, image="", description=""):
@@ -40,6 +42,7 @@ class Link:
             'description': self.description
         }
 
+
 class Association:
     def __init__(self, id, from_id, to_id, label):
         self.id = id
@@ -54,6 +57,7 @@ class Association:
             'to_id': self.to_id,
             'label': self.label
         }
+
 
 class EntityStore:
     def __init__(self):
@@ -107,14 +111,15 @@ class EntityStore:
                 text = file.read()
         return image_name, text
 
-
     def _parse_association(self, association):
         link_id = association.find(".//{http://www.topicmaps.org/xtm/1.0/}instanceOf") \
             .find("{http://www.topicmaps.org/xtm/1.0/}topicRef") \
             .attrib['{http://www.w3.org/1999/xlink}href'].split('#')[-1]
-        from_id = association.find(".//{http://www.topicmaps.org/xtm/1.0/}member[1]/{http://www.topicmaps.org/xtm/1.0/}topicRef") \
+        from_id = \
+        association.find(".//{http://www.topicmaps.org/xtm/1.0/}member[1]/{http://www.topicmaps.org/xtm/1.0/}topicRef") \
             .attrib['{http://www.w3.org/1999/xlink}href'].split('#')[-1]
-        to_id = association.find(".//{http://www.topicmaps.org/xtm/1.0/}member[2]/{http://www.topicmaps.org/xtm/1.0/}topicRef") \
+        to_id = \
+        association.find(".//{http://www.topicmaps.org/xtm/1.0/}member[2]/{http://www.topicmaps.org/xtm/1.0/}topicRef") \
             .attrib['{http://www.w3.org/1999/xlink}href'].split('#')[-1]
         self.associations[link_id] = Association(link_id, from_id, to_id, self.links[link_id].label)
 
@@ -209,6 +214,11 @@ def load_triads():
         return jsonify({"error": str(e)})
 
 
+@app.route("/test", methods=["GET"])
+def test():
+    return jsonify({"message": "Hello World!"})
+
+
 def extract_files(file):
     with zipfile.ZipFile(file, 'r') as zip_ref:
         xml_files = [f for f in zip_ref.namelist() if f.endswith('.xml')]
@@ -231,12 +241,16 @@ def extract_files(file):
 
         for file_item in zip_ref.namelist():
             if file_item.endswith(('.png', '.jpg', '.jpeg', '.txt', '.htm')):
-                extracted_path = zip_ref.extract(file_item, images_folder if file_item.endswith(('.png', '.jpg', '.jpeg')) else texts_folder)
-                new_path = os.path.join(images_folder if file_item.endswith(('.png', '.jpg', '.jpeg')) else texts_folder, os.path.basename(file_item))
+                extracted_path = zip_ref.extract(file_item, images_folder if file_item.endswith(
+                    ('.png', '.jpg', '.jpeg')) else texts_folder)
+                new_path = os.path.join(
+                    images_folder if file_item.endswith(('.png', '.jpg', '.jpeg')) else texts_folder,
+                    os.path.basename(file_item))
                 shutil.move(extracted_path, new_path)
                 clean_up_empty_directories(os.path.dirname(extracted_path), images_folder, texts_folder)
 
         return xml_filename
+
 
 def clean_up_empty_directories(intermediate_dir, images_folder, texts_folder):
     while intermediate_dir and intermediate_dir not in {images_folder, texts_folder}:
