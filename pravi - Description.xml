@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<topicMap id="20C7MFL47-12QTKZD-25X"
+    xmlns="http://www.topicmaps.org/xtm/1.0/" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <topic id="20C7MGCSL-1RK64CD-2PT">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#concept"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Loan: reject]]></baseNameString>
+        </baseName>
+        <occurrence>
+            <resourceRef xlink:type="simple" xlink:href="file:/./pravi - Description/New Tekstni dokument.htm"/>
+        </occurrence>
+        <occurrence>
+            <resourceRef xlink:type="simple" xlink:href="file:/./pravi - Description/pngtree-rejected-icon-png-image_9115832.png"/>
+        </occurrence>
+    </topic>
+    <topic id="20C7MFYPJ-RG90K0-29Y">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#concept"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Loan:reject]]></baseNameString>
+        </baseName>
+        <occurrence>
+            <resourceRef xlink:type="simple" xlink:href="file:/./pravi - Description/New Tekstni dokument.txt"/>
+        </occurrence>
+        <occurrence>
+            <resourceRef xlink:type="simple" xlink:href="file:/./pravi - Description/pngtree-rejected-icon-png-image_9115832.png"/>
+        </occurrence>
+    </topic>
+    <topic id="20C7MG7KQ-S8SWB4-2KV">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#concept"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Salary?]]></baseNameString>
+        </baseName>
+        <occurrence>
+            <resourceRef xlink:type="simple" xlink:href="file:/./pravi - Description/unnamed.png"/>
+        </occurrence>
+        <occurrence>
+            <resourceRef xlink:type="simple" xlink:href="file:/./pravi - Description/text1 - Copy.txt"/>
+        </occurrence>
+    </topic>
+    <topic id="20C7MGHYT-WD9B72-2TS">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#concept"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Owns house/car?]]></baseNameString>
+        </baseName>
+        <occurrence>
+            <resourceRef xlink:type="simple" xlink:href="file:/./pravi - Description/5fc6ff5de22da642363875006c0d67aa.jpg"/>
+        </occurrence>
+        <occurrence>
+            <resourceRef xlink:type="simple" xlink:href="file:/./pravi - Description/text1 - Copy - Copy.txt"/>
+        </occurrence>
+    </topic>
+    <topic id="20C7MFL47-2X79N1-25Y">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#concept"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Loan: accept]]></baseNameString>
+        </baseName>
+        <occurrence>
+            <resourceRef xlink:type="simple" xlink:href="file:/./pravi - Description/loan-approved.jpg"/>
+        </occurrence>
+        <occurrence>
+            <resourceRef xlink:type="simple" xlink:href="file:/./pravi - Description/New Tekstni dokument.htm"/>
+        </occurrence>
+    </topic>
+    <topic id="20C7MG376-1G2FWJM-2FW">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#concept"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Employed?]]></baseNameString>
+        </baseName>
+        <occurrence>
+            <resourceRef xlink:type="simple" xlink:href="file:/./pravi - Description/contract-employment.jpg"/>
+        </occurrence>
+        <occurrence>
+            <resourceRef xlink:type="simple" xlink:href="file:/./pravi - Description/text1.txt"/>
+        </occurrence>
+    </topic>
+    <topic id="20C7MGN8F-14GKFY7-2ZV">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#linkingPhrase"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[No]]></baseNameString>
+        </baseName>
+    </topic>
+    <association id="assoc_20C7MGN8F-14GKFY7-2ZV">
+        <instanceOf>
+            <topicRef xlink:type="simple" xlink:href="#20C7MGN8F-14GKFY7-2ZV"/>
+        </instanceOf>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#incoming"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#20C7MGHYT-WD9B72-2TS"/>
+        </member>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#outgoing"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#20C7MGCSL-1RK64CD-2PT"/>
+        </member>
+    </association>
+    <topic id="20C7MGN8C-12BB15F-2Z7">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#linkingPhrase"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[No]]></baseNameString>
+        </baseName>
+    </topic>
+    <association id="assoc_20C7MGN8C-12BB15F-2Z7">
+        <instanceOf>
+            <topicRef xlink:type="simple" xlink:href="#20C7MGN8C-12BB15F-2Z7"/>
+        </instanceOf>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#incoming"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#20C7MG376-1G2FWJM-2FW"/>
+        </member>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#outgoing"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#20C7MFYPJ-RG90K0-29Y"/>
+        </member>
+    </association>
+    <topic id="20C7MGN8D-1K8VJJV-2ZN">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#linkingPhrase"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Yes]]></baseNameString>
+        </baseName>
+    </topic>
+    <association id="assoc_20C7MGN8D-1K8VJJV-2ZN">
+        <instanceOf>
+            <topicRef xlink:type="simple" xlink:href="#20C7MGN8D-1K8VJJV-2ZN"/>
+        </instanceOf>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#incoming"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#20C7MG376-1G2FWJM-2FW"/>
+        </member>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#outgoing"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#20C7MG7KQ-S8SWB4-2KV"/>
+        </member>
+    </association>
+    <topic id="20C7MGN8C-9F4FNB-2Z1">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#linkingPhrase"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Low]]></baseNameString>
+        </baseName>
+    </topic>
+    <association id="assoc_20C7MGN8C-9F4FNB-2Z1">
+        <instanceOf>
+            <topicRef xlink:type="simple" xlink:href="#20C7MGN8C-9F4FNB-2Z1"/>
+        </instanceOf>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#incoming"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#20C7MG7KQ-S8SWB4-2KV"/>
+        </member>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#outgoing"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#20C7MGHYT-WD9B72-2TS"/>
+        </member>
+    </association>
+    <topic id="20C7MGN8D-1BGQWS9-2ZG">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#linkingPhrase"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Very low]]></baseNameString>
+        </baseName>
+    </topic>
+    <association id="assoc_20C7MGN8D-1BGQWS9-2ZG">
+        <instanceOf>
+            <topicRef xlink:type="simple" xlink:href="#20C7MGN8D-1BGQWS9-2ZG"/>
+        </instanceOf>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#incoming"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#20C7MG7KQ-S8SWB4-2KV"/>
+        </member>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#outgoing"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#20C7MGCSL-1RK64CD-2PT"/>
+        </member>
+    </association>
+    <topic id="20C7MGN8G-14KXNVD-301">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#linkingPhrase"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[Yes]]></baseNameString>
+        </baseName>
+    </topic>
+    <association id="assoc_20C7MGN8G-14KXNVD-301">
+        <instanceOf>
+            <topicRef xlink:type="simple" xlink:href="#20C7MGN8G-14KXNVD-301"/>
+        </instanceOf>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#incoming"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#20C7MGHYT-WD9B72-2TS"/>
+        </member>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#outgoing"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#20C7MFL47-2X79N1-25Y"/>
+        </member>
+    </association>
+    <topic id="20C7MGN8B-1TRK0VB-2YR">
+        <instanceOf>
+            <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#linkingPhrase"/>
+        </instanceOf>
+        <baseName>
+            <baseNameString><![CDATA[High]]></baseNameString>
+        </baseName>
+    </topic>
+    <association id="assoc_20C7MGN8B-1TRK0VB-2YR">
+        <instanceOf>
+            <topicRef xlink:type="simple" xlink:href="#20C7MGN8B-1TRK0VB-2YR"/>
+        </instanceOf>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#incoming"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#20C7MG7KQ-S8SWB4-2KV"/>
+        </member>
+        <member>
+            <roleSpec>
+                <subjectIndicatorRef xlink:type="simple" xlink:href="http://cmap.coginst.uwf.edu/#outgoing"/>
+            </roleSpec>
+            <topicRef xlink:type="simple" xlink:href="#20C7MFL47-2X79N1-25Y"/>
+        </member>
+    </association>
+</topicMap>

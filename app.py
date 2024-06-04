@@ -150,7 +150,7 @@ class EntityStore:
 entity_store = EntityStore()
 
 
-@app.route("/get_children", methods=["GET"])
+@app.route("/api/get_children", methods=["GET"])
 def get_children():
     try:
         node = request.args.get("node")
@@ -169,13 +169,13 @@ def get_children():
         return jsonify({"error": str(e)})
 
 
-@app.route('/images', methods=["GET"])
+@app.route('/api/images', methods=["GET"])
 def get_image():
     filename = request.args.get("image")
     return send_file(filename)
 
 
-@app.route('/tree', methods=["GET"])
+@app.route('/api/tree', methods=["GET"])
 def start_tree():
     folder = request.args.get("name").strip()
     file = f"{folder}.xml"
@@ -184,7 +184,7 @@ def start_tree():
     return jsonify(entity_store.find_root_node())
 
 
-@app.route('/trees', methods=["GET"])
+@app.route('/api/trees', methods=["GET"])
 def get_trees():
     folder_objects = []
     for item in os.listdir():
@@ -198,7 +198,7 @@ def get_trees():
     return jsonify(folder_objects)
 
 
-@app.route("/load_triads", methods=["POST"])
+@app.route("/api/load_triads", methods=["POST"])
 def load_triads():
     try:
         uploaded_file = request.files["file"]
@@ -214,7 +214,7 @@ def load_triads():
         return jsonify({"error": str(e)})
 
 
-@app.route("/test", methods=["GET"])
+@app.route("/api/test", methods=["GET"])
 def test():
     return jsonify({"message": "Hello World!"})
 
