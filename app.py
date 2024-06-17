@@ -9,7 +9,7 @@ from PIL import Image
 app = Flask(__name__)
 CORS(app)
 
-FOLDER_IGNORE_LIST = {".DS_Store", ".git", ".venv", "__pycache__", ".idea"}
+FOLDER_IGNORE_LIST = {".DS_Store", ".git", ".venv", "__pycache__", ".idea", "venv"}
 
 
 class Entity:
