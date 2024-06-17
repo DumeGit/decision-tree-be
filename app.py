@@ -4,6 +4,7 @@ import zipfile
 import xml.etree.ElementTree as ET
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
+from PIL import Image
 
 app = Flask(__name__)
 CORS(app)
@@ -146,6 +147,12 @@ class EntityStore:
                 }
         return None
 
+    def clear_tree(self):
+        self.entities.clear()
+        self.links.clear()
+        self.associations.clear()
+        self.decision_tree.clear()
+
 
 entity_store = EntityStore()
 
@@ -177,11 +184,19 @@ def get_image():
 
 @app.route('/api/tree', methods=["GET"])
 def start_tree():
+    entity_store.clear_tree()
     folder = request.args.get("name").strip()
     file = f"{folder}.xml"
     entity_store.parse_xtm_file(os.path.join(folder, file))
     entity_store.build_decision_tree()
     return jsonify(entity_store.find_root_node())
+
+
+@app.route('/api/tree/delete', methods=["DELETE"])
+def delete_tree():
+    folder = request.args.get("name").strip()
+    shutil.rmtree(folder)
+    return jsonify({"message": "Tree has been deleted"})
 
 
 @app.route('/api/trees', methods=["GET"])
@@ -203,6 +218,7 @@ def load_triads():
     try:
         uploaded_file = request.files["file"]
         if uploaded_file.filename:
+            entity_store.clear_tree()
             xml_file = extract_files(uploaded_file)
             xml_file_folder = xml_file.split('.xml')[0]
             entity_store.parse_xtm_file(os.path.join(xml_file_folder, xml_file))
@@ -240,11 +256,26 @@ def extract_files(file):
         os.makedirs(texts_folder, exist_ok=True)
 
         for file_item in zip_ref.namelist():
-            if file_item.endswith(('.png', '.jpg', '.jpeg', '.txt', '.htm')):
-                extracted_path = zip_ref.extract(file_item, images_folder if file_item.endswith(
-                    ('.png', '.jpg', '.jpeg')) else texts_folder)
+            if file_item.endswith(('.png', '.jpg', '.jpeg')):
+                extracted_path = zip_ref.extract(file_item)
+
+                # Open the image for compression
+                img = Image.open(extracted_path)
+
+                # Adjust quality (lower value means higher compression)
+                quality = 80
+
+                # Save the compressed image to a new path
+                new_path = os.path.join(images_folder, os.path.basename(file_item))
+                img.save(new_path, optimize=True, quality=quality)
+
+                # Clean up the temporary extracted file
+                os.remove(extracted_path)
+            else:
+                extracted_path = zip_ref.extract(file_item, texts_folder if file_item.endswith(
+                    ('.txt', '.htm')) else images_folder)
                 new_path = os.path.join(
-                    images_folder if file_item.endswith(('.png', '.jpg', '.jpeg')) else texts_folder,
+                    texts_folder if file_item.endswith(('.txt', '.htm')) else images_folder,
                     os.path.basename(file_item))
                 shutil.move(extracted_path, new_path)
                 clean_up_empty_directories(os.path.dirname(extracted_path), images_folder, texts_folder)
