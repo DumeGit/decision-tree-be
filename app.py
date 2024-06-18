@@ -95,9 +95,17 @@ class EntityStore:
                     folder_name, file_name = file_path.split('/./')[1].split('/')
                     if file_extension.lower() in ('.png', '.jpg', '.jpeg'):
                         image_name = os.path.join(folder_name, 'images', file_name)
-                    elif file_extension.lower() in ('.txt', '.htm'):
+                    elif file_extension.lower() in ('.txt'):
                         with open(os.path.join(folder_name, 'texts', file_name), 'r') as file:
                             description = file.read()
+                    elif file_extension.lower() in ('.htm', '.html'):
+                        file_name_folder = os.path.join(folder_name, 'texts', file_name)
+                        if os.path.isfile(file_name_folder):
+                            with open(os.path.join(folder_name, 'texts', file_name), 'r') as file:
+                                description = file.read()
+                        else:
+                            with open(os.path.join(folder_name, 'texts', file_name + 'l'), 'r') as file:
+                                description = file.read()
             self.entities[topic_id] = Entity(topic_id, base_name, image_name, description)
 
     def _parse_occurrence(self, file_path):
@@ -107,9 +115,17 @@ class EntityStore:
         text = ""
         if file_extension.lower() in ('.png', '.jpg', '.jpeg'):
             image_name = os.path.join(folder_name, 'images', file_name)
-        elif file_extension.lower() in ('.txt', '.htm'):
+        elif file_extension.lower() in ('.txt'):
             with open(os.path.join(folder_name, 'texts', file_name), 'r') as file:
                 text = file.read()
+        elif file_extension.lower() in ('.htm', '.html'):
+            file_name_folder = os.path.join(folder_name, 'texts', file_name)
+            if os.path.isfile(file_name_folder):
+                with open(os.path.join(folder_name, 'texts', file_name), 'r') as file:
+                    text = file.read()
+            else:
+                with open(os.path.join(folder_name, 'texts', file_name + 'l'), 'r') as file:
+                    text = file.read()
         return image_name, text
 
     def _parse_association(self, association):
@@ -273,9 +289,9 @@ def extract_files(file):
                 os.remove(extracted_path)
             else:
                 extracted_path = zip_ref.extract(file_item, texts_folder if file_item.endswith(
-                    ('.txt', '.htm')) else images_folder)
+                    ('.txt', '.htm', '.html')) else images_folder)
                 new_path = os.path.join(
-                    texts_folder if file_item.endswith(('.txt', '.htm')) else images_folder,
+                    texts_folder if file_item.endswith(('.txt', '.htm', '.html')) else images_folder,
                     os.path.basename(file_item))
                 shutil.move(extracted_path, new_path)
                 clean_up_empty_directories(os.path.dirname(extracted_path), images_folder, texts_folder)
