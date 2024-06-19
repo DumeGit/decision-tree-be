@@ -13,18 +13,20 @@ FOLDER_IGNORE_LIST = {".DS_Store", ".git", ".venv", "__pycache__", ".idea", "ven
 
 
 class Entity:
-    def __init__(self, id, label, image="", description=""):
+    def __init__(self, id, label, image="", description="", parent=None):
         self.id = id
         self.label = label
         self.image = image
         self.description = description
+        self.parent = parent
 
     def to_dict(self):
         return {
             'id': self.id,
             'label': self.label,
             'image': self.image,
-            'description': self.description
+            'description': self.description,
+            'parent': self.parent
         }
 
 
@@ -91,53 +93,39 @@ class EntityStore:
                 file_path = occurrence.find(".//{http://www.topicmaps.org/xtm/1.0/}resourceRef") \
                     .attrib['{http://www.w3.org/1999/xlink}href']
                 if file_path.startswith('file'):
-                    _, file_extension = os.path.splitext(file_path)
-                    folder_name, file_name = file_path.split('/./')[1].split('/')
-                    if file_extension.lower() in ('.png', '.jpg', '.jpeg'):
-                        image_name = os.path.join(folder_name, 'images', file_name)
-                    elif file_extension.lower() in ('.txt'):
-                        with open(os.path.join(folder_name, 'texts', file_name), 'r') as file:
-                            description = file.read()
-                    elif file_extension.lower() in ('.htm', '.html'):
-                        file_name_folder = os.path.join(folder_name, 'texts', file_name)
-                        if os.path.isfile(file_name_folder):
-                            with open(os.path.join(folder_name, 'texts', file_name), 'r') as file:
-                                description = file.read()
-                        else:
-                            with open(os.path.join(folder_name, 'texts', file_name + 'l'), 'r') as file:
-                                description = file.read()
+                    image_name, description = self._parse_occurrence(file_path, image_name, description)
             self.entities[topic_id] = Entity(topic_id, base_name, image_name, description)
 
-    def _parse_occurrence(self, file_path):
+    def _parse_occurrence(self, file_path, image_name, description):
         _, file_extension = os.path.splitext(file_path)
         folder_name, file_name = file_path.split('/./')[1].split('/')
-        image_name = ""
-        text = ""
         if file_extension.lower() in ('.png', '.jpg', '.jpeg'):
             image_name = os.path.join(folder_name, 'images', file_name)
         elif file_extension.lower() in ('.txt'):
             with open(os.path.join(folder_name, 'texts', file_name), 'r') as file:
-                text = file.read()
+                description = file.read()
         elif file_extension.lower() in ('.htm', '.html'):
             file_name_folder = os.path.join(folder_name, 'texts', file_name)
             if os.path.isfile(file_name_folder):
                 with open(os.path.join(folder_name, 'texts', file_name), 'r') as file:
-                    text = file.read()
+                    description = file.read()
             else:
                 with open(os.path.join(folder_name, 'texts', file_name + 'l'), 'r') as file:
-                    text = file.read()
-        return image_name, text
+                    description = file.read()
+        return image_name, description
 
     def _parse_association(self, association):
         link_id = association.find(".//{http://www.topicmaps.org/xtm/1.0/}instanceOf") \
             .find("{http://www.topicmaps.org/xtm/1.0/}topicRef") \
             .attrib['{http://www.w3.org/1999/xlink}href'].split('#')[-1]
         from_id = \
-        association.find(".//{http://www.topicmaps.org/xtm/1.0/}member[1]/{http://www.topicmaps.org/xtm/1.0/}topicRef") \
-            .attrib['{http://www.w3.org/1999/xlink}href'].split('#')[-1]
+            association.find(
+                ".//{http://www.topicmaps.org/xtm/1.0/}member[1]/{http://www.topicmaps.org/xtm/1.0/}topicRef") \
+                .attrib['{http://www.w3.org/1999/xlink}href'].split('#')[-1]
         to_id = \
-        association.find(".//{http://www.topicmaps.org/xtm/1.0/}member[2]/{http://www.topicmaps.org/xtm/1.0/}topicRef") \
-            .attrib['{http://www.w3.org/1999/xlink}href'].split('#')[-1]
+            association.find(
+                ".//{http://www.topicmaps.org/xtm/1.0/}member[2]/{http://www.topicmaps.org/xtm/1.0/}topicRef") \
+                .attrib['{http://www.w3.org/1999/xlink}href'].split('#')[-1]
         self.associations[link_id] = Association(link_id, from_id, to_id, self.links[link_id].label)
 
     def build_decision_tree(self):
@@ -145,6 +133,7 @@ class EntityStore:
             if assoc.from_id not in self.decision_tree:
                 self.decision_tree[assoc.from_id] = {}
             self.decision_tree[assoc.from_id][assoc.id] = assoc.to_id
+            self.entities[assoc.to_id].parent = assoc.from_id
 
     def find_root_node(self):
         target_nodes = {assoc.to_id for assoc in self.associations.values()}
@@ -176,21 +165,11 @@ entity_store = EntityStore()
 @app.route("/api/get_children", methods=["GET"])
 def get_children():
     try:
-        node = request.args.get("node")
-        children_list = [
-            {
-                "question": entity_store.entities[item[1]].to_dict(),
-                "answer": entity_store.links[item[0]].to_dict()
-            }
-            for item in list(entity_store.decision_tree.get(node, {}).items())
-        ]
-        return jsonify({
-            "root": entity_store.entities.get(node).to_dict(),
-            "children": children_list
-        })
+        node_id = request.args.get("node")
+        node = create_node(node_id)
+        return jsonify(node)
     except Exception as e:
         return jsonify({"error": str(e)})
-
 
 @app.route('/api/images', methods=["GET"])
 def get_image():
@@ -250,6 +229,36 @@ def load_triads():
 def test():
     return jsonify({"message": "Hello World!"})
 
+@app.route("/api/tree_ascii", methods=["GET"])
+def get_tree_ascii():
+    try:
+        root_node = entity_store.find_root_node()
+        if root_node:
+            tree_ascii = generate_tree_ascii(root_node)
+            return jsonify({"tree_ascii": tree_ascii})
+        else:
+            return jsonify({"message": "No tree found"})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+
+def generate_tree_ascii(node, prefix="", is_last=True):
+    tree_ascii = prefix
+    if is_last:
+        tree_ascii += "└── "
+        prefix += "    "
+    else:
+        tree_ascii += "├── "
+        prefix += "│   "
+    tree_ascii += node["root"]["label"] + "\n"
+
+    children = node["children"]
+    for i, child in enumerate(children):
+        is_last_child = i == len(children) - 1
+        tree_ascii += generate_tree_ascii(create_node(child["question"]["id"]), prefix, is_last_child)
+
+    return tree_ascii
+
 
 def extract_files(file):
     with zipfile.ZipFile(file, 'r') as zip_ref:
@@ -306,6 +315,17 @@ def clean_up_empty_directories(intermediate_dir, images_folder, texts_folder):
         except OSError:
             break
         intermediate_dir = os.path.dirname(intermediate_dir)
+
+def create_node(node_id):
+    children_list = [
+        {
+            "question": entity_store.entities[item[1]].to_dict(),
+            "answer": entity_store.links[item[0]].to_dict()
+        }
+        for item in list(entity_store.decision_tree.get(node_id, {}).items())
+    ]
+    node = entity_store.entities.get(node_id)
+    return {"root": node.to_dict(), "children": children_list}
 
 
 if __name__ == "__main__":
