@@ -133,7 +133,10 @@ class EntityStore:
             if assoc.from_id not in self.decision_tree:
                 self.decision_tree[assoc.from_id] = {}
             self.decision_tree[assoc.from_id][assoc.id] = assoc.to_id
-            self.entities[assoc.to_id].parent = assoc.from_id
+
+        for parent_id, children in self.decision_tree.items():
+            for child_id in children.values():
+                self.entities[child_id].parent = parent_id
 
     def find_root_node(self):
         target_nodes = {assoc.to_id for assoc in self.associations.values()}
@@ -170,6 +173,7 @@ def get_children():
         return jsonify(node)
     except Exception as e:
         return jsonify({"error": str(e)})
+
 
 @app.route('/api/images', methods=["GET"])
 def get_image():
@@ -228,6 +232,7 @@ def load_triads():
 @app.route("/api/test", methods=["GET"])
 def test():
     return jsonify({"message": "Hello World!"})
+
 
 @app.route("/api/tree_ascii", methods=["GET"])
 def get_tree_ascii():
@@ -315,6 +320,7 @@ def clean_up_empty_directories(intermediate_dir, images_folder, texts_folder):
         except OSError:
             break
         intermediate_dir = os.path.dirname(intermediate_dir)
+
 
 def create_node(node_id):
     children_list = [
