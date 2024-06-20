@@ -99,7 +99,7 @@ class EntityStore:
     def _parse_occurrence(self, file_path, image_name, description):
         _, file_extension = os.path.splitext(file_path)
         folder_name, file_name = file_path.split('/./')[1].split('/')
-        if file_extension.lower() in ('.png', '.jpg', '.jpeg'):
+        if file_extension.lower() in ('.png', '.jpg', '.jpeg', '.svg'):
             image_name = os.path.join(folder_name, 'images', file_name)
         elif file_extension.lower() in ('.txt'):
             with open(os.path.join(folder_name, 'texts', file_name), 'r') as file:
@@ -247,7 +247,24 @@ def get_tree_ascii():
         return jsonify({"error": str(e)})
 
 
-def generate_tree_ascii(node, prefix="", is_last=True):
+@app.route("/api/tree_graph", methods=["GET"])
+def get_tree_graph():
+    path = request.args.get("name")
+    folder = path.split('/')[0]
+    filename = path.split('/')[1]
+    matching_files = [file for file in os.listdir(folder) if file.startswith(filename)]
+
+    if matching_files:
+        # Send the first matching file
+        return send_file(os.path.join(folder, matching_files[0]))
+
+
+def generate_tree_ascii(node, visited=None, node_ids=None, prefix="", is_last=True):
+    if visited is None:
+        visited = set()
+    if node_ids is None:
+        node_ids = {}
+
     tree_ascii = prefix
     if is_last:
         tree_ascii += "└── "
@@ -255,12 +272,28 @@ def generate_tree_ascii(node, prefix="", is_last=True):
     else:
         tree_ascii += "├── "
         prefix += "│   "
-    tree_ascii += node["root"]["label"] + "\n"
+
+    node_id = node["root"]["id"]
+    if node_id not in node_ids:
+        node_ids[node_id] = len(node_ids) + 1
+
+    tree_ascii += f"[{node_ids[node_id]}] {node['root']['label']}\n"
+
+    if node_id in visited:
+        return tree_ascii
+
+    visited.add(node_id)
 
     children = node["children"]
     for i, child in enumerate(children):
         is_last_child = i == len(children) - 1
-        tree_ascii += generate_tree_ascii(create_node(child["question"]["id"]), prefix, is_last_child)
+        child_node = create_node(child["question"]["id"])
+        child_id = child_node["root"]["id"]
+
+        if child_id in visited:
+            tree_ascii += prefix + ("└── " if is_last_child else "├── ") + f"[{node_ids[child_id]}] {child_node['root']['label']}\n"
+        else:
+            tree_ascii += generate_tree_ascii(child_node, visited, node_ids, prefix, is_last_child)
 
     return tree_ascii
 
@@ -286,21 +319,23 @@ def extract_files(file):
         os.makedirs(texts_folder, exist_ok=True)
 
         for file_item in zip_ref.namelist():
-            if file_item.endswith(('.png', '.jpg', '.jpeg')):
+            if file_item.startswith('tree_graph'):
+                zip_ref.extract(file_item, folder_name)
+            elif file_item.endswith(('.png', '.jpg', '.jpeg')):
                 extracted_path = zip_ref.extract(file_item)
 
-                # Open the image for compression
                 img = Image.open(extracted_path)
 
-                # Adjust quality (lower value means higher compression)
                 quality = 80
 
-                # Save the compressed image to a new path
                 new_path = os.path.join(images_folder, os.path.basename(file_item))
                 img.save(new_path, optimize=True, quality=quality)
 
-                # Clean up the temporary extracted file
                 os.remove(extracted_path)
+            elif file_item.endswith('.svg'):
+                extracted_path = zip_ref.extract(file_item)
+                new_path = os.path.join(images_folder, os.path.basename(file_item))
+                shutil.move(extracted_path, new_path)
             else:
                 extracted_path = zip_ref.extract(file_item, texts_folder if file_item.endswith(
                     ('.txt', '.htm', '.html')) else images_folder)
