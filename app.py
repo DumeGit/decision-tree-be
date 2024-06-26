@@ -1,6 +1,7 @@
 import os
 import shutil
 import zipfile
+from collections import deque
 
 import patoolib
 from lxml import etree
@@ -18,10 +19,8 @@ FOLDER_IGNORE_LIST = {".DS_Store", ".git", ".venv", "__pycache__", ".idea", "ven
 
 @app.errorhandler(Exception)
 def handle_exception(e):
-    # Pass through HTTP errors
     if isinstance(e, HTTPException):
         return jsonify(error=str(e)), e.code
-    # Now handle non-HTTP exceptions
     return jsonify(error="An unexpected error occurred"), 500
 
 
@@ -88,6 +87,7 @@ class Association:
 class EntityStore:
     XTM_NS = "http://www.topicmaps.org/xtm/1.0/"
     XLINK_NS = "http://www.w3.org/1999/xlink"
+
     def __init__(self):
         self.entities = {}
         self.links = {}
@@ -99,7 +99,7 @@ class EntityStore:
         tree = etree.parse(file_path, parser)
         root = tree.getroot()
 
-        nsmap = {'xtm': self.XTM_NS, 'xlink': self.XLINK_NS }
+        nsmap = {'xtm': self.XTM_NS, 'xlink': self.XLINK_NS}
         find = partial(root.find, namespaces=nsmap)
         findall = partial(root.findall, namespaces=nsmap)
 
@@ -377,6 +377,23 @@ def get_tree_graph():
         raise InternalServerError("An unexpected error occurred")
 
 
+@app.route("/api/get_path", methods=["GET"])
+def get_paths():
+    try:
+        node_id = request.args.get("node")
+        if not node_id:
+            raise BadRequest("Missing 'node' parameter")
+
+        paths = find_paths_to_node(node_id)
+        if not paths:
+            raise NotFound(f"No paths found to node with id '{node_id}'")
+        paths.reverse()
+        return jsonify(paths)
+    except Exception as e:
+        app.logger.error(f"Error in get_paths: {str(e)}")
+        raise InternalServerError("An unexpected error occurred")
+
+
 def generate_tree_ascii(node, visited=None, node_ids=None, prefix="", is_last=True):
     if visited is None:
         visited = set()
@@ -395,7 +412,7 @@ def generate_tree_ascii(node, visited=None, node_ids=None, prefix="", is_last=Tr
     if node_id not in node_ids:
         node_ids[node_id] = len(node_ids) + 1
 
-    tree_ascii += f"[{node_ids[node_id]}] {node['root']['label']}\n"
+    tree_ascii += f"[{node_ids[node_id]}] {node['root']['label']} [{node_id}]\n"
 
     if node_id in visited:
         return tree_ascii
@@ -410,7 +427,7 @@ def generate_tree_ascii(node, visited=None, node_ids=None, prefix="", is_last=Tr
 
         if child_id in visited:
             tree_ascii += prefix + (
-                "└── " if is_last_child else "├── ") + f"[{node_ids[child_id]}] {child_node['root']['label']}\n"
+                "└── " if is_last_child else "├── ") + f"[{node_ids[child_id]}] {child_node['root']['label']} [{child_id}]\n"
         else:
             tree_ascii += generate_tree_ascii(child_node, visited, node_ids, prefix, is_last_child)
 
@@ -439,7 +456,6 @@ def _extract_from_zip(zip_ref):
     xml_filename = xml_files[0]
     folder_name = xml_filename.split('.')[0]
 
-    # Check if the folder already exists
     if tree_exists(folder_name):
         raise Conflict(
             f"A tree with the name '{folder_name}' already exists. Please choose a different name or delete the existing tree first.")
@@ -569,6 +585,37 @@ def create_node(node_id):
     ]
     node = entity_store.entities.get(node_id)
     return {"root": node.to_dict(), "children": children_list}
+
+
+def find_paths_to_node(target_id):
+    def build_parent_map():
+        parent_map = {}
+        for parent_id, children in entity_store.decision_tree.items():
+            for _, child_id in children.items():
+                if child_id not in parent_map:
+                    parent_map[child_id] = []
+                parent_map[child_id].append(parent_id)
+        return parent_map
+
+    def bfs():
+        parent_map = build_parent_map()
+        queue = deque([(target_id, [])])
+        paths = []
+
+        while queue:
+            current_id, path = queue.popleft()
+            current_node = entity_store.entities[current_id].to_dict()
+            current_path = [current_node] + path
+
+            if current_id not in parent_map:
+                paths.append(current_path)
+            else:
+                for parent_id in parent_map[current_id]:
+                    queue.append((parent_id, current_path))
+
+        return paths
+
+    return bfs()
 
 
 if __name__ == "__main__":
